@@ -17,11 +17,11 @@ import java.util.List;
  * 2020-07-2020/7/26
  */
 public class TankFrame extends Frame {
-    public static final int GAME_WIDTH = 800;
+    public static final int GAME_WIDTH = 1000;
 
-    public static final int GAME_HEIGHT = 600;
+    public static final int GAME_HEIGHT = 800;
 
-    public Tank myTank = new Tank(600, 500, Dir.UP, false,true, Group.GOOD, this);
+    public Tank myTank = new Tank(600, 500, Dir.UP, false, Group.GOOD, this);
 
     public List<Bullet> bullets = new ArrayList<>();
 

@@ -16,7 +16,9 @@ public class Bullet {
     private boolean live = true;
     private Group group;
     private TankFrame tankFrame;
-    private static final int SPEED = 10;
+    private static final int SPEED = 15;
+
+    private Rectangle rect = new Rectangle();
 
     public Bullet(int x, int y, Dir dir, Group group, TankFrame tankFrame) {
         this.x = x;
@@ -24,6 +26,14 @@ public class Bullet {
         this.dir = dir;
         this.group = group;
         this.tankFrame = tankFrame;
+        this.updateRect();
+    }
+
+    public void updateRect() {
+        this.rect.x = this.x;
+        this.rect.y = this.y;
+        this.rect.width = getBulletImage(dir).getWidth();
+        this.rect.height = getBulletImage(dir).getHeight();
     }
 
     public void paint(Graphics g) {
@@ -60,6 +70,7 @@ public class Bullet {
         if (x < 0 || y < 0 || x > TankFrame.GAME_WIDTH || y > TankFrame.GAME_HEIGHT) {
             live = false;
         }
+        updateRect();
     }
 
     public Group getGroup() {
@@ -68,6 +79,14 @@ public class Bullet {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public void setRect(Rectangle rect) {
+        this.rect = rect;
     }
 
     public boolean isLive() {
@@ -85,17 +104,14 @@ public class Bullet {
         if (!tank.isLive() || !this.isLive()) {
             return;
         }
-        BufferedImage bulletImage = getBulletImage(dir);
-        Rectangle bulletRect = new Rectangle(this.x, this.y, bulletImage.getWidth(), bulletImage.getHeight());
-        BufferedImage tankImage = Tank.getTankImage(tank.getDir());
-        Rectangle tankRect = new Rectangle(tank.getX(), tank.getY(), tankImage.getWidth(), tankImage.getHeight());
-        if (bulletRect.intersects(tankRect)) {
+        BufferedImage tankImage = Tank.getTankImage(tank.getDir(), tank.getGroup(), tank.getImageStep());
+        if (this.rect.intersects(tank.getRect())) {
             this.die();
             tank.die();
-            int eX = this.x + (tankImage.getWidth() - ResourceMgr.explodes[0].getWidth())/2;
-            int eY = this.y + (tankImage.getHeight() - ResourceMgr.explodes[0].getHeight())/2;
+            int eX = tank.getX() + (tankImage.getWidth() - ResourceMgr.explodes[0].getWidth())/2;
+            int eY = tank.getY() + (tankImage.getHeight() - ResourceMgr.explodes[0].getHeight())/2;
             tankFrame.explodes.add(new Explode(eX, eY, tankFrame));
-            //new Audio("audio/explode.wav").play();
+            new Thread(() -> new Audio("audio/explode.wav").play()).start();
         }
     }
 
